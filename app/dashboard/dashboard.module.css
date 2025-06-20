@@ -1,0 +1,131 @@
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.container h1 {
+  font-size: 2.5rem;
+  font-family: var(--font-lora);
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.input {
+  flex-grow: 1;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.button {
+  background-color: var(--ring);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  color: var(--primary);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; /* Align with the container's border */
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tabButton:hover {
+  color: var(--foreground);
+}
+
+.activeTab {
+  color: var(--foreground);
+  border-bottom-color: var(--ring);
+  font-weight: 600;
+}
+
+/* List */
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.2s;
+}
+
+.listItem:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.listItem span {
+  cursor: pointer;
+  flex: 1;
+  padding-right: 1rem;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: var(--primary);
+}
+
+.removeButton {
+  background-color: transparent;
+  color: var(--primary);
+  border: none;
+  padding: 0.25rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.listItem:hover .removeButton {
+  opacity: 1;
+  color: #fc8181; /* A reddish color for delete */
+}

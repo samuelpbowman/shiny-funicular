@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  /* Adjust height to fill viewport better, accounting for padding/footer */
+  height: calc(100vh - 200px);
+}
+
+.container h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.thread {
+  flex-grow: 1;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(45,55,72,0.9) 0%, rgba(26,32,44,0.9) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3) inset;
+}
+
+.thread::-webkit-scrollbar {
+  width: 8px;
+}
+.thread::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thread::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 10px;
+  border: 2px solid var(--card);
+}
+
+.user,
+.assistant {
+  padding: 0.75rem 1.25rem;
+  border-radius: 1.25rem; /* More bubbly */
+  max-width: 75%;
+  line-height: 1.6;
+  position: relative;
+  animation: fadeInUp 0.3s ease-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.user {
+  background-color: #805ad5; /* purple-500 */
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 0.5rem;
+}
+.user::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid #805ad5;
+  border-top: 8px solid transparent;
+  border-bottom: 0 solid transparent;
+}
+
+.assistant {
+  background-color: #4a5568; /* gray-600 */
+  color: var(--foreground);
+  align-self: flex-start;
+  border-bottom-left-radius: 0.5rem;
+}
+.assistant::after {
+  content: "";
+  position: absolute;
+  left: -8px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-right: 8px solid #4a5568;
+  border-top: 8px solid transparent;
+  border-bottom: 0 solid transparent;
+}
+
+.inputBar {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--background);
+  padding-top: 1rem;
+}
+
+.inputBar input {
+  flex: 1;
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputBar input:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.inputBar input::placeholder {
+  color: #718096; /* gray-500 */
+}
+
+.sendButton {
+  background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+  color: white;
+  padding: 0 1rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  transition: transform 0.1s ease;
+}
+.sendButton:active {
+  transform: scale(0.96);
+}
+
+.sendButton:hover {
+  background-color: #6b46c1; /* purple-600 */
+}
+
+.sendButton:disabled {
+  background-color: #4a5568;
+  opacity: 0.7;
+}
+
+.sendButton svg {
+  width: 20px;
+  height: 20px;
+}

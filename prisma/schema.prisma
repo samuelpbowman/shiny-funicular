@@ -1,0 +1,17 @@
+// Prisma schema for MySQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Todo {
+  id        String   @id @default(uuid()) @db.Char(36)
+  text      String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

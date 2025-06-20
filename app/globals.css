@@ -1,33 +1,41 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --font-inter: 'Inter', sans-serif;
+  --font-lora: 'Lora', serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* Dark Theme */
+  --background: #1a202c; /* gray-900 */
+  --foreground: #f7fafc; /* gray-100 */
+  --primary: #a0aec0; /* gray-400 */
+  --primary-foreground: #1a202c; /* gray-900 */
+  --card: #2d3748; /* gray-800 */
+  --card-foreground: #f7fafc; /* gray-100 */
+  --border: #4a5568; /* gray-600 */
+  --input: #4a5568; /* gray-600 */
+  --ring: #9f7aea; /* purple-400 */
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --radius: 0.5rem;
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  border-color: var(--border);
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
