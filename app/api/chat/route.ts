@@ -22,6 +22,14 @@ When you confirm that multiple TODOs have been created, DO NOT list each item in
 Always confirm with the user after you have taken an action.
 
 If you are not sure what to do, ask for clarification.
+
+Format your responses using markdown when appropriate:
+- Use **bold** for emphasis on important information
+- Use *italics* for subtle emphasis
+- Use \`code\` formatting for TODO item names or technical terms
+- Use bullet points or numbered lists when presenting multiple items
+- Use headers (## or ###) to organize longer responses
+- Use code blocks for any code examples or structured data
 `.trim();
 
 const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
@@ -34,6 +42,7 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
         type: "object",
         properties: {
           text: { type: "string", description: "The content of the todo item" },
+          task: { type: "string", description: "The task group/category for this todo item" },
         },
         required: ["text"],
       },
@@ -52,6 +61,7 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
             items: { type: "string" },
             description: "The content of each todo item",
           },
+          task: { type: "string", description: "The task group/category for these todo items" },
         },
         required: ["texts"],
       },
@@ -126,10 +136,10 @@ export async function POST(req: NextRequest) {
 
       switch (functionName) {
         case "createTodo":
-          functionResponse = await createTodo(functionArgs.text);
+          functionResponse = await createTodo(functionArgs.text, functionArgs.task);
           break;
         case "createManyTodos":
-          functionResponse = await createManyTodos(functionArgs.texts);
+          functionResponse = await createManyTodos(functionArgs.texts, functionArgs.task);
           break;
         case "listTodos":
           functionResponse = await listTodos();

@@ -3,20 +3,20 @@ import { Todo } from "@prisma/client";
 
 
 export async function listTodos() {
-  return prisma.todo.findMany({ orderBy: { createdAt: "desc" } });
+  return prisma.todo.findMany({ orderBy: { createdAt: "asc" } });
 }
 
 export async function getTodo(id: string) {
   return prisma.todo.findUnique({ where: { id } });
 }
 
-export async function createTodo(text: string) {
-  return prisma.todo.create({ data: { text } });
+export async function createTodo(text: string, task?: string) {
+  return prisma.todo.create({ data: { text, task } });
 }
 
-export async function createManyTodos(texts: string[]) {
+export async function createManyTodos(texts: string[], task?: string) {
   return prisma.todo.createMany({
-    data: texts.map((text) => ({ text })),
+    data: texts.map((text) => ({ text, task })),
   });
 }
 

@@ -12,6 +12,7 @@ datasource db {
 model Todo {
   id        String   @id @default(uuid()) @db.Char(36)
   text      String
+  task      String?
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
 }

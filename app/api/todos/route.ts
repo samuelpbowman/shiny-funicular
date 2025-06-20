@@ -13,11 +13,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { text } = await req.json();
+    const { text, task } = await req.json();
     if (!text || typeof text !== "string") {
       return NextResponse.json({ error: "`text` is required" }, { status: 400 });
     }
-    const todo = await createTodo(text);
+    const todo = await createTodo(text, task);
     return NextResponse.json(todo, { status: 201 });
   } catch (error) {
     console.error("[API_TODOS_POST]", error);

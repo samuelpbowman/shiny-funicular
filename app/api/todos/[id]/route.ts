@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteTodo, getTodo, updateTodo } from "@/lib/todoStore";
 
-interface Params {
-  params: { id: string };
+interface RouteContext {
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(_req: NextRequest, context: Params) {
-  const { id } = context.params;
+export async function GET(_req: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
   try {
     const todo = await getTodo(id);
     if (!todo) {
@@ -19,8 +19,8 @@ export async function GET(_req: NextRequest, context: Params) {
   }
 }
 
-export async function PUT(req: NextRequest, context: Params) {
-  const { id } = context.params;
+export async function PUT(req: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
   try {
     const updates = await req.json();
     const todo = await updateTodo(id, updates);
@@ -34,8 +34,8 @@ export async function PUT(req: NextRequest, context: Params) {
   }
 }
 
-export async function DELETE(_req: NextRequest, context: Params) {
-  const { id } = context.params;
+export async function DELETE(_req: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
   try {
     const todo = await deleteTodo(id);
     if (!todo) {

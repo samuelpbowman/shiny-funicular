@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>TODO App</h1>
+        <h1 className={styles.title}>TODO App</h1>
         <p>Welcome to your AI-powered TODO application.</p>
       </div>
 
