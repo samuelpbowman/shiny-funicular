@@ -44,36 +44,81 @@ export default function Login() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.form}>
-        <h1>{isSignUp ? 'Sign Up' : 'Sign In'}</h1>
-        <form onSubmit={handleAuth}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <button type="submit" disabled={loading} className={styles.button}>
-            {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+      <div className={styles.authCard}>
+        <div className={styles.header}>
+          <div className={styles.logo}>
+            <div className={styles.logoIcon}>📝</div>
+            <span className={styles.logoText}>TODO</span>
+          </div>
+          <h1 className={styles.title}>
+            {isSignUp ? 'Create your account' : 'Welcome back'}
+          </h1>
+          <p className={styles.subtitle}>
+            {isSignUp 
+              ? 'Start organizing your tasks today' 
+              : 'Sign in to access your todos'
+            }
+          </p>
+        </div>
+
+        <form onSubmit={handleAuth} className={styles.form}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="email" className={styles.label}>Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className={styles.input}
+            />
+          </div>
+          
+          <div className={styles.inputGroup}>
+            <label htmlFor="password" className={styles.label}>Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className={styles.input}
+            />
+          </div>
+
+          <button type="submit" disabled={loading} className={styles.submitButton}>
+            {loading ? (
+              <div className={styles.spinner}></div>
+            ) : (
+              isSignUp ? 'Create Account' : 'Sign In'
+            )}
           </button>
         </form>
-        {message && <p className={styles.message}>{message}</p>}
+
+        {message && (
+          <div className={styles.message}>
+            <div className={styles.messageIcon}>
+              {message.includes('error') || message.includes('Error') ? '⚠️' : 'ℹ️'}
+            </div>
+            <p>{message}</p>
+          </div>
+        )}
+
+        <div className={styles.divider}>
+          <span>or</span>
+        </div>
+
         <button
           type="button"
           onClick={() => setIsSignUp(!isSignUp)}
-          className={styles.toggle}
+          className={styles.toggleButton}
         >
-          {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
+          {isSignUp 
+            ? 'Already have an account? Sign in' 
+            : "Don't have an account? Sign up"
+          }
         </button>
       </div>
     </div>
