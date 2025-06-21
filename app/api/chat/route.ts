@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import {
   createManyTodos,
@@ -7,6 +7,7 @@ import {
   listTodos,
   updateTodo,
 } from "@/lib/todoStore";
+import { createClient } from "@/lib/supabase/server";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -110,6 +111,17 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
+  // Get user from session
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+      status: 401,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
   const initialMessages = [
     { role: "system", content: systemPrompt },
     ...messages,
@@ -120,54 +132,139 @@ export async function POST(req: NextRequest) {
     messages: initialMessages,
     tools: tools,
     tool_choice: "auto",
+    stream: true,
+  }, {
+    signal: req.signal,
   });
 
-  const responseMessage = response.choices[0].message;
-  const toolCalls = responseMessage.tool_calls;
+  const encoder = new TextEncoder();
+  
+  const stream = new ReadableStream({
+    async start(controller) {
+      const responseMessage: { role: string; content: string; tool_calls?: any[] } = { role: "assistant", content: "" };
+      const toolCalls: any[] = [];
+      
+      // Check if request was aborted
+      const checkAborted = () => {
+        if (req.signal?.aborted) {
+          controller.close();
+          return true;
+        }
+        return false;
+      };
+      
+      try {
+        for await (const chunk of response) {
+          if (checkAborted()) break;
+          
+          const delta = chunk.choices[0]?.delta;
+          
+          if (delta?.content) {
+            responseMessage.content += delta.content;
+            if (!checkAborted()) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: delta.content })}\n\n`));
+            }
+          }
+          
+          if (delta?.tool_calls) {
+            for (const toolCall of delta.tool_calls) {
+              if (!toolCalls[toolCall.index]) {
+                toolCalls[toolCall.index] = {
+                  id: toolCall.id,
+                  type: "function",
+                  function: { name: toolCall.function?.name || "", arguments: "" }
+                };
+              }
+              if (toolCall.function?.arguments) {
+                toolCalls[toolCall.index].function.arguments += toolCall.function.arguments;
+              }
+            }
+          }
+          
+          if (chunk.choices[0]?.finish_reason === "tool_calls") {
+            responseMessage.tool_calls = toolCalls.filter(Boolean);
+            
+            // Process tool calls
+            const toolMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [];
+            for (const toolCall of responseMessage.tool_calls) {
+              const functionName = toolCall.function.name;
+              const functionArgs = JSON.parse(toolCall.function.arguments);
+              let functionResponse;
 
-  if (toolCalls) {
-    const toolMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [];
-    for (const toolCall of toolCalls) {
-      const functionName = toolCall.function.name;
-      const functionArgs = JSON.parse(toolCall.function.arguments);
-      let functionResponse;
+              console.log("Calling tool:", functionName, functionArgs);
 
-      console.log("Calling tool:", functionName, functionArgs);
+              switch (functionName) {
+                case "createTodo":
+                  functionResponse = await createTodo(functionArgs.text, user.id, functionArgs.task);
+                  break;
+                case "createManyTodos":
+                  functionResponse = await createManyTodos(functionArgs.texts, user.id, functionArgs.task);
+                  break;
+                case "listTodos":
+                  functionResponse = await listTodos(user.id);
+                  break;
+                case "updateTodo":
+                  functionResponse = await updateTodo(functionArgs.id, user.id, functionArgs);
+                  break;
+                case "deleteTodo":
+                  functionResponse = await deleteTodo(functionArgs.id, user.id);
+                  break;
+                default:
+                  functionResponse = { error: `Unknown tool: ${functionName}` };
+              }
 
-      switch (functionName) {
-        case "createTodo":
-          functionResponse = await createTodo(functionArgs.text, functionArgs.task);
-          break;
-        case "createManyTodos":
-          functionResponse = await createManyTodos(functionArgs.texts, functionArgs.task);
-          break;
-        case "listTodos":
-          functionResponse = await listTodos();
-          break;
-        case "updateTodo":
-          functionResponse = await updateTodo(functionArgs.id, functionArgs);
-          break;
-        case "deleteTodo":
-          functionResponse = await deleteTodo(functionArgs.id);
-          break;
-        default:
-          functionResponse = { error: `Unknown tool: ${functionName}` };
+              toolMessages.push({
+                tool_call_id: toolCall.id,
+                role: "tool",
+                content: JSON.stringify(functionResponse),
+              });
+            }
+
+            // Get final response after tool calls
+            const secondResponse = await openai.chat.completions.create({
+              model: "gpt-4o-mini",
+              messages: [...initialMessages, responseMessage, ...toolMessages],
+              stream: true,
+            }, {
+              signal: req.signal,
+            });
+
+            const finalResponse = { role: "assistant", content: "" };
+            for await (const chunk of secondResponse) {
+              if (checkAborted()) break;
+              
+              const delta = chunk.choices[0]?.delta;
+              if (delta?.content) {
+                finalResponse.content += delta.content;
+                if (!checkAborted()) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: delta.content })}\n\n`));
+                }
+              }
+            }
+
+          }
+        }
+        
+        
+      } catch (error) {
+        console.error("Streaming error:", error);
+        if (!checkAborted()) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "Stream failed" })}\n\n`));
+        }
+      } finally {
+        if (!checkAborted()) {
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+          controller.close();
+        }
       }
+    },
+  });
 
-      toolMessages.push({
-        tool_call_id: toolCall.id,
-        role: "tool",
-        content: JSON.stringify(functionResponse),
-      });
-    }
-
-    const secondResponse = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [...initialMessages, responseMessage, ...toolMessages],
-    });
-
-    return NextResponse.json({ reply: secondResponse.choices[0].message });
-  }
-
-  return NextResponse.json({ reply: responseMessage });
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    },
+  });
 }

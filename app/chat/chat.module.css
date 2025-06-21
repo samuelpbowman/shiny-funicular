@@ -72,6 +72,68 @@
   align-self: flex-start;
   border-bottom-left-radius: 0.5rem;
 }
+
+/* Markdown styling within assistant messages */
+.assistant ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.assistant ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.assistant li {
+  margin: 0.25rem 0;
+}
+
+.assistant p {
+  margin: 0.5rem 0;
+}
+
+.assistant p:first-child {
+  margin-top: 0;
+}
+
+.assistant p:last-child {
+  margin-bottom: 0;
+}
+
+.assistant h1,
+.assistant h2,
+.assistant h3,
+.assistant h4 {
+  margin: 0.75rem 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.assistant h1:first-child,
+.assistant h2:first-child,
+.assistant h3:first-child,
+.assistant h4:first-child {
+  margin-top: 0;
+}
+
+.assistant code {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+}
+
+.assistant pre {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+  overflow-x: auto;
+}
+
+.assistant pre code {
+  background-color: transparent;
+  padding: 0;
+}
 .assistant::after {
   content: "";
   position: absolute;
@@ -95,7 +157,7 @@
   padding-top: 1rem;
 }
 
-.inputBar input {
+.textarea {
   flex: 1;
   background-color: var(--card);
   color: var(--foreground);
@@ -104,15 +166,20 @@
   border-radius: var(--radius);
   font-size: 1rem;
   transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical;
+  min-height: 2.5rem;
+  max-height: 8rem;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
-.inputBar input:focus {
+.textarea:focus {
   outline: none;
   border-color: var(--ring);
   box-shadow: 0 0 0 2px var(--ring);
 }
 
-.inputBar input::placeholder {
+.textarea::placeholder {
   color: #718096; /* gray-500 */
 }
 
@@ -141,6 +208,31 @@
 }
 
 .sendButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.stopButton {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  color: white;
+  padding: 0 1rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  transition: transform 0.1s ease;
+}
+
+.stopButton:active {
+  transform: scale(0.96);
+}
+
+.stopButton:hover {
+  background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+}
+
+.stopButton svg {
   width: 20px;
   height: 20px;
 }

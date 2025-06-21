@@ -13,7 +13,6 @@ type Todo = {
 export default function Dashboard() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [text, setText] = useState("");
-  const [task, setTask] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"todos" | "completed">("todos");
   const [collapsedTasks, setCollapsedTasks] = useState<Set<string>>(new Set());
@@ -47,14 +46,13 @@ export default function Dashboard() {
       const res = await fetch("/api/todos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, task: task || undefined }),
+        body: JSON.stringify({ text, task: "dashboard" }),
       });
 
       if (res.ok) {
         const newTodo = await res.json();
         setTodos((prev) => [...prev, newTodo]);
         setText("");
-        setTask("");
       } else {
         console.error("Failed to add todo");
       }
@@ -63,7 +61,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [text, task]);
+  }, [text]);
 
   const toggleComplete = useCallback(async (id: string, completed: boolean) => {
     try {
@@ -148,6 +146,7 @@ export default function Dashboard() {
     });
   };
 
+
   return (
     <div className={styles.container}>
       <h1>TODO Dashboard</h1>
@@ -157,13 +156,6 @@ export default function Dashboard() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Add a new todo..."
-          className={styles.input}
-        />
-        <input
-          type="text"
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          placeholder="Task group (optional)"
           className={styles.input}
         />
         <button type="submit" disabled={loading} className={styles.button}>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteTodo, getTodo, updateTodo } from "@/lib/todoStore";
+import { createClient } from "@/lib/supabase/server";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -8,7 +9,14 @@ interface RouteContext {
 export async function GET(_req: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   try {
-    const todo = await getTodo(id);
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const todo = await getTodo(id, user.id);
     if (!todo) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -22,8 +30,15 @@ export async function GET(_req: NextRequest, context: RouteContext) {
 export async function PUT(req: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const updates = await req.json();
-    const todo = await updateTodo(id, updates);
+    const todo = await updateTodo(id, user.id, updates);
     if (!todo) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -37,7 +52,14 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 export async function DELETE(_req: NextRequest, context: RouteContext) {
   const { id } = await context.params;
   try {
-    const todo = await deleteTodo(id);
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const todo = await deleteTodo(id, user.id);
     if (!todo) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }

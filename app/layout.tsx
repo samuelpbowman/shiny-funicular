@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import styles from './layout.module.css';
-import Header from './components/Header';
+import Navbar from './components/Navbar';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${lora.variable}`}>
       <body>
-        <Header />
+        <Navbar />
         <div className={styles.container}>
           <main className={styles.mainContent}>
             {children}

@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Todo` ADD COLUMN `task` VARCHAR(191) NULL;
