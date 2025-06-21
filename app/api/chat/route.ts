@@ -168,14 +168,14 @@ export async function POST(req: NextRequest) {
           
           if (delta?.tool_calls) {
             for (const toolCall of delta.tool_calls) {
-              if (!toolCalls[toolCall.index]) {
+              if (toolCall.index !== undefined && !toolCalls[toolCall.index]) {
                 toolCalls[toolCall.index] = {
-                  id: toolCall.id,
+                  id: toolCall.id || "",
                   type: "function",
                   function: { name: toolCall.function?.name || "", arguments: "" }
                 };
               }
-              if (toolCall.function?.arguments) {
+              if (toolCall.index !== undefined && toolCall.function?.arguments) {
                 toolCalls[toolCall.index].function.arguments += toolCall.function.arguments;
               }
             }
