@@ -67,11 +67,15 @@
   font-size: 2.5rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  font-family: var(--font-lora);
+  color: var(--primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .description p {
   font-size: 1.125rem;
-  color: #a0aec0; /* gray-400 */
+  color: var(--primary);
+  opacity: 0.9;
 }
 
 .grid {
@@ -92,36 +96,60 @@
   display: block;
   padding: 2rem;
   background-color: var(--card);
-  border: 1px solid var(--border);
+  border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   text-align: left;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-paper);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ring), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-book);
   text-decoration: none;
+  border-color: var(--ring);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .card h2 {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
+  font-family: var(--font-lora);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .card h2 span {
   display: inline-block;
-  transition: transform 0.2s;
+  transition: transform 0.3s ease;
 }
 
 .card:hover h2 span {
-  transform: translateX(4px);
+  transform: translateX(6px);
 }
 
 .card p {
   font-size: 1rem;
-  color: #a0aec0; /* gray-400 */
+  color: var(--card-foreground);
   line-height: 1.6;
+  opacity: 0.9;
 }
 
 .ctas {

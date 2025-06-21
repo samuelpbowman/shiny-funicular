@@ -15,9 +15,23 @@
 
 .footer {
   padding: 1.5rem 2rem;
-  border-top: 1px solid var(--border);
+  border-top: 2px solid var(--border);
   text-align: center;
   font-size: 0.875rem;
-  color: #718096; /* gray-500 */
+  color: var(--muted);
   background-color: var(--card);
+  font-family: var(--font-lora);
+  font-style: italic;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ring), var(--accent), transparent);
+  opacity: 0.4;
 }

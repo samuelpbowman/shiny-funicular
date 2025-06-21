@@ -10,6 +10,20 @@
   font-weight: 600;
   margin-bottom: 2rem;
   text-align: center;
+  color: var(--primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.container h1::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--ring), var(--accent));
 }
 
 .form {
@@ -20,68 +34,127 @@
 
 .input {
   flex-grow: 1;
-  background-color: var(--card);
-  border: 1px solid var(--border);
+  background-color: var(--input);
+  border: var(--border-width) solid var(--border);
   color: var(--foreground);
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   border-radius: var(--radius);
   font-size: 1rem;
+  font-family: var(--font-inter);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-inset);
 }
 
 .input:focus {
   outline: none;
   border-color: var(--ring);
-  box-shadow: 0 0 0 2px var(--ring);
+  box-shadow: 0 0 0 2px var(--ring), var(--shadow-inset);
+  background-color: var(--card);
+}
+
+.input::placeholder {
+  color: var(--muted);
+  font-style: italic;
 }
 
 .button {
-  background-color: var(--ring);
-  color: white;
+  background: linear-gradient(135deg, var(--ring), var(--accent));
+  color: var(--primary-foreground);
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius);
   font-weight: 600;
+  font-family: var(--font-inter);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-paper);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
 }
 
 .button:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-book);
+}
+
+.button:hover::before {
+  left: 100%;
+}
+
+.button:active {
+  transform: translateY(0);
 }
 
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+.button:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-paper);
 }
 
 /* Tabs */
 .tabs {
   display: flex;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   margin-bottom: 1.5rem;
+  background-color: var(--card);
+  border-radius: var(--radius) var(--radius) 0 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-inset);
 }
 
 .tabButton {
   background: none;
   border: none;
-  color: var(--primary);
-  padding: 0.75rem 1.25rem;
+  color: var(--muted);
+  padding: 1rem 1.5rem;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px; /* Align with the container's border */
-  transition: color 0.2s, border-color 0.2s;
+  font-family: var(--font-lora);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tabButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--ring), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .tabButton:hover {
-  color: var(--foreground);
+  color: var(--primary);
+  background-color: rgba(212, 165, 116, 0.05);
 }
 
 .activeTab {
-  color: var(--foreground);
-  border-bottom-color: var(--ring);
+  color: var(--primary);
+  border-bottom-color: var(--accent);
   font-weight: 600;
+  background-color: var(--input);
 }
 
 /* List */
@@ -94,13 +167,40 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--border);
-  transition: background-color 0.2s;
+  background-color: var(--card);
+  margin-bottom: 0.5rem;
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-paper);
+  position: relative;
 }
 
 .listItem:first-child {
-  border-top: 1px solid var(--border);
+  border-top: none;
+}
+
+.listItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--ring), var(--accent));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.listItem:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-book);
+  border-color: var(--ring);
+}
+
+.listItem:hover::before {
+  opacity: 1;
 }
 
 .listItem span {
@@ -116,18 +216,22 @@
 
 .removeButton {
   background-color: transparent;
-  color: var(--primary);
+  color: var(--muted);
   border: none;
-  padding: 0.25rem;
+  padding: 0.5rem;
   font-size: 1.25rem;
   line-height: 1;
   opacity: 0.6;
-  transition: opacity 0.2s, color 0.2s;
+  transition: all 0.2s ease;
+  border-radius: var(--radius);
+  cursor: pointer;
 }
 
 .listItem:hover .removeButton {
   opacity: 1;
-  color: #fc8181; /* A reddish color for delete */
+  color: var(--destructive);
+  background-color: rgba(160, 82, 45, 0.1);
+  transform: scale(1.1);
 }
 
 /* Task Groups */
