@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import styles from './login.module.css'
@@ -11,8 +11,22 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const router = useRouter()
   const supabase = createClient()
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        router.push('/dashboard')
+      } else {
+        setCheckingAuth(false)
+      }
+    }
+    checkUser()
+  }, [router, supabase.auth])
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,25 +35,55 @@ export default function Login() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         })
         if (error) throw error
-        setMessage('Check your email for the confirmation link!')
+        
+        if (data.user && data.user.email_confirmed_at) {
+          // User is immediately confirmed (some setups)
+          setMessage('Account created successfully! Redirecting...')
+          setTimeout(() => router.push('/dashboard'), 1500)
+        } else {
+          // User needs to confirm email
+          setMessage('Check your email for the confirmation link!')
+        }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
         if (error) throw error
-        router.push('/dashboard')
+        
+        if (data.user) {
+          setMessage('Sign in successful! Redirecting...')
+          // Small delay to show success message
+          setTimeout(() => router.push('/dashboard'), 1000)
+        }
       }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show loading while checking authentication
+  if (checkingAuth) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.authCard}>
+          <div className={styles.header}>
+            <div className={styles.logo}>
+              <div className={styles.logoIcon}>📝</div>
+              <span className={styles.logoText}>TODO</span>
+            </div>
+            <div className={styles.spinner}></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

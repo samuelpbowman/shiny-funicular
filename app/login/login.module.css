@@ -181,6 +181,16 @@
   margin-bottom: 1.5rem;
 }
 
+.message:has(.messageIcon:contains("ℹ️")) {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.message:has(.messageIcon:contains("⚠️")) {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
 .messageIcon {
   font-size: 1.25rem;
   flex-shrink: 0;
