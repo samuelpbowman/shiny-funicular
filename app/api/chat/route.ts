@@ -141,8 +141,8 @@ export async function POST(req: NextRequest) {
   
   const stream = new ReadableStream({
     async start(controller) {
-      const responseMessage: { role: string; content: string; tool_calls?: any[] } = { role: "assistant", content: "" };
-      const toolCalls: any[] = [];
+      const responseMessage: { role: string; content: string; tool_calls?: OpenAI.Chat.Completions.ChatCompletionMessageToolCall[] } = { role: "assistant", content: "" };
+      const toolCalls: OpenAI.Chat.Completions.ChatCompletionMessageToolCall[] = [];
       
       // Check if request was aborted
       const checkAborted = () => {
