@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import styles from './search.module.css'
@@ -13,7 +13,7 @@ type Profile = {
   avatar_url: string | null
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(false)
   const searchParams = useSearchParams()
@@ -52,7 +52,7 @@ export default function SearchPage() {
       ) : !query ? (
         <div className={styles.empty}>Use the search bar above to find users</div>
       ) : profiles.length === 0 ? (
-        <div className={styles.empty}>No users found for "{query}"</div>
+        <div className={styles.empty}>No users found for &quot;{query}&quot;</div>
       ) : (
         <div className={styles.results}>
           {profiles.map((profile) => (
@@ -82,5 +82,13 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchContent />
+    </Suspense>
   )
 }

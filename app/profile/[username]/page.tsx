@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import styles from './profile.module.css'
@@ -42,19 +42,14 @@ export default function ProfilePage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchProfile()
-    getCurrentUser()
-  }, [username])
-
-  const getCurrentUser = async () => {
+  const getCurrentUser = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       setCurrentUserId(user.id)
     }
-  }
+  }, [supabase.auth])
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const response = await fetch(`/api/profiles/${username}`)
       const data = await response.json()
@@ -74,7 +69,12 @@ export default function ProfilePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [username])
+
+  useEffect(() => {
+    fetchProfile()
+    getCurrentUser()
+  }, [username, fetchProfile, getCurrentUser])
 
   const checkFollowStatus = async (profileId: string) => {
     try {

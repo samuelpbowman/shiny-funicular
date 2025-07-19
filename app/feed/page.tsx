@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import styles from './feed.module.css'
 
@@ -21,13 +20,8 @@ export default function FeedPage() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(true)
   const [feedType, setFeedType] = useState<'feed' | 'public'>('feed')
-  const supabase = createClient()
 
-  useEffect(() => {
-    fetchTodos()
-  }, [feedType])
-
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     setLoading(true)
     try {
       const response = await fetch(`/api/feed?type=${feedType}`)
@@ -41,7 +35,11 @@ export default function FeedPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [feedType])
+
+  useEffect(() => {
+    fetchTodos()
+  }, [feedType, fetchTodos])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

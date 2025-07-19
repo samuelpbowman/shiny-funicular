@@ -4,15 +4,20 @@ import { getUserPublicTodos } from '@/lib/todoStore'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
   try {
-    const { username } = params
+    const { username } = await params
     
-    const [profile, todos, followCounts] = await Promise.all([
-      getProfileByUsername(username),
-      getUserPublicTodos(profile?.id || ''),
-      getFollowCounts(profile?.id || '')
+    const profile = await getProfileByUsername(username)
+    
+    if (!profile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    }
+
+    const [todos, followCounts] = await Promise.all([
+      getUserPublicTodos(profile.id),
+      getFollowCounts(profile.id)
     ])
 
     return NextResponse.json({ 

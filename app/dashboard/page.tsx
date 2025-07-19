@@ -64,7 +64,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [text]);
+  }, [text, isPublic]);
 
   const toggleComplete = useCallback(async (id: string, completed: boolean) => {
     try {
