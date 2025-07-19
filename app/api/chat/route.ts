@@ -12,13 +12,23 @@ import { createClient } from "@/lib/supabase/server";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const systemPrompt = `
-You are a helpful TODO list assistant. Your goal is to help the user manage their TODO list.
+You are a helpful TODO list assistant for a social todo platform. Your goal is to help the user manage their TODO list and understand social features.
 
-When a user asks for something that involves multiple steps, like planning a dinner or a trip, break it down into a list of TODO items and use the 'createManyTodos' tool to add them all at once.
+**Social Features Available:**
+- Users can make todos public to share with followers
+- Users can follow other users to see their public todos in their feed
+- Users have profiles with usernames, display names, and bios
 
-For single tasks, use the 'createTodo' tool.
+**Creating Todos:**
+- When a user asks for something that involves multiple steps, like planning a dinner or a trip, break it down into a list of TODO items and use the 'createManyTodos' tool to add them all at once.
+- For single tasks, use the 'createTodo' tool.
+- Ask if they want to make todos public when appropriate
+- When you confirm that multiple TODOs have been created, DO NOT list each item individually—just state how many were added.
 
-When you confirm that multiple TODOs have been created, DO NOT list each item individually—just state how many were added.
+**Social Commands:**
+- When users ask about following someone, direct them to search for users or visit profiles
+- When users ask about their feed, explain they can see public todos from people they follow
+- Suggest making todos public when they might want to share progress or inspiration
 
 Always confirm with the user after you have taken an action.
 
@@ -44,6 +54,7 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
         properties: {
           text: { type: "string", description: "The content of the todo item" },
           task: { type: "string", description: "The task group/category for this todo item" },
+          isPublic: { type: "boolean", description: "Whether this todo should be public (visible to followers)" },
         },
         required: ["text"],
       },
@@ -63,6 +74,7 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
             description: "The content of each todo item",
           },
           task: { type: "string", description: "The task group/category for these todo items" },
+          isPublic: { type: "boolean", description: "Whether these todos should be public (visible to followers)" },
         },
         required: ["texts"],
       },
@@ -195,10 +207,10 @@ export async function POST(req: NextRequest) {
 
               switch (functionName) {
                 case "createTodo":
-                  functionResponse = await createTodo(functionArgs.text, user.id, functionArgs.task);
+                  functionResponse = await createTodo(functionArgs.text, user.id, functionArgs.task, functionArgs.isPublic);
                   break;
                 case "createManyTodos":
-                  functionResponse = await createManyTodos(functionArgs.texts, user.id, functionArgs.task);
+                  functionResponse = await createManyTodos(functionArgs.texts, user.id, functionArgs.task, functionArgs.isPublic);
                   break;
                 case "listTodos":
                   functionResponse = await listTodos(user.id);

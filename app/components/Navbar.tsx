@@ -7,8 +7,15 @@ import Link from 'next/link'
 import { User } from '@supabase/supabase-js'
 import styles from './Navbar.module.css'
 
+type Profile = {
+  username: string
+  display_name: string | null
+}
+
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
@@ -17,12 +24,28 @@ export default function Navbar() {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      
+      if (user) {
+        // Fetch user profile
+        try {
+          const response = await fetch('/api/profiles')
+          const data = await response.json()
+          if (response.ok && data.profile) {
+            setProfile(data.profile)
+          }
+        } catch (error) {
+          console.error('Error fetching profile:', error)
+        }
+      }
     }
     getUser()
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null)
+      if (!session?.user) {
+        setProfile(null)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -31,6 +54,14 @@ export default function Navbar() {
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
+  }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery('')
+    }
   }
 
   // Don't show navbar on login page
@@ -58,6 +89,12 @@ export default function Navbar() {
               Dashboard
             </Link>
             <Link 
+              href="/feed" 
+              className={`${styles.navLink} ${pathname === '/feed' ? styles.active : ''}`}
+            >
+              Feed
+            </Link>
+            <Link 
               href="/chat" 
               className={`${styles.navLink} ${pathname === '/chat' ? styles.active : ''}`}
             >
@@ -66,8 +103,21 @@ export default function Navbar() {
           </div>
         </div>
         <div className={styles.navRight}>
+          <form onSubmit={handleSearch} className={styles.searchForm}>
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.searchInput}
+            />
+          </form>
           <div className={styles.userInfo}>
-            <span className={styles.userEmail}>{user.email}</span>
+            {profile && (
+              <Link href={`/profile/${profile.username}`} className={styles.profileLink}>
+                {profile.display_name || profile.username}
+              </Link>
+            )}
             <button onClick={handleLogout} className={styles.logoutButton}>
               Sign Out
             </button>

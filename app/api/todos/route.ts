@@ -28,11 +28,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { text, task } = await req.json();
+    const { text, task, isPublic } = await req.json();
     if (!text || typeof text !== "string") {
       return NextResponse.json({ error: "`text` is required" }, { status: 400 });
     }
-    const todo = await createTodo(text, user.id, task);
+    const todo = await createTodo(text, user.id, task, isPublic || false);
     return NextResponse.json(todo, { status: 201 });
   } catch (error) {
     console.error("[API_TODOS_POST]", error);

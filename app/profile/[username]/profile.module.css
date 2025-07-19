@@ -1,0 +1,213 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.profileInfo {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #666;
+}
+
+.details {
+  flex: 1;
+}
+
+.displayName {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.username {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0 0 1rem 0;
+}
+
+.bio {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333;
+  margin: 0 0 1.5rem 0;
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.stat strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.followButton {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #007bff;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.followButton:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+.followButton.following {
+  background: transparent;
+  color: #007bff;
+}
+
+.followButton.following:hover {
+  background: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.followButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.todosSection {
+  margin-top: 3rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.noTodos {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.todosList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.todoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.todoContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.todoText {
+  font-size: 1rem;
+  color: #333;
+}
+
+.todoText.completed {
+  text-decoration: line-through;
+  color: #666;
+}
+
+.todoDate {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.completedBadge {
+  background: #28a745;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .profileInfo {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .stats {
+    justify-content: center;
+  }
+}

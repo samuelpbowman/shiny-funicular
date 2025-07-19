@@ -8,11 +8,13 @@ type Todo = {
   text: string;
   task?: string;
   completed: boolean;
+  is_public: boolean;
 };
 
 export default function Dashboard() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [text, setText] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"todos" | "completed">("todos");
   const [collapsedTasks, setCollapsedTasks] = useState<Set<string>>(new Set());
@@ -46,13 +48,14 @@ export default function Dashboard() {
       const res = await fetch("/api/todos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, task: "dashboard" }),
+        body: JSON.stringify({ text, task: "dashboard", isPublic }),
       });
 
       if (res.ok) {
         const newTodo = await res.json();
         setTodos((prev) => [...prev, newTodo]);
         setText("");
+        setIsPublic(false);
       } else {
         console.error("Failed to add todo");
       }
@@ -158,6 +161,14 @@ export default function Dashboard() {
           placeholder="Add a new todo..."
           className={styles.input}
         />
+        <label className={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked)}
+          />
+          Make public (visible to followers)
+        </label>
         <button type="submit" disabled={loading} className={styles.button}>
           Add
         </button>
